@@ -1,0 +1,12 @@
+- name: example of fact
+  hosts: all
+  tasks:
+    - name: store kernel version include into /etc/motd
+      copy: 
+        content: "{{ ansible }}"
+        dest: /etc/motd
+        
+    - name: append hostnmae
+      lineinfile: 
+        line: "{{ ansible_fqdn }} and {{ ansible_eth0.ipv4.address}}"
+        dest: /etc/motd

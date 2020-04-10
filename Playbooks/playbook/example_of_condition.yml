@@ -1,0 +1,22 @@
+- name: example condition based tasks
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: first check file assistance
+      stat: 
+        path: /etc/krnetwork.conf
+      register: any_var
+      
+    - name: cretae the file if not exists
+      copy: 
+        content: "I was not exists"
+        dest: /etc/krnetwork.conf
+      when: any_var.stat.exists == false
+      
+    - name: append data if  exists
+      lineinfile: 
+        line: "I was  exists please override"
+        dest: /etc/krnetwork.conf
+      when: any_var.stat.exists == true
+      
+      

@@ -1,0 +1,32 @@
+- name: this is my first playbook
+  hosts: myhost
+  user: ec2-user
+  become: true
+  become_method: sudo
+  become_user: root
+  gather_facts: false
+  tasks:
+    - name: cretae directory into /tmp/data
+      file:
+         path: /tmp/data
+         state: directory
+         mode: 0777
+         owner: root
+         group: root
+
+    - name: copy /etc/passwd into /tmp/data
+      copy:
+         src:  /etc/passwd
+         dest: /etc/data
+
+    - name: restart postfix service
+      service:
+         name: postfix
+         state: restarted
+         
+- name: my second play book
+  hosts: localhost
+  tasks:
+    -yum:
+        name: ftp
+        state: installed 

@@ -1,0 +1,8 @@
+- nmae: condition based tasks
+  hosts: all
+  tasks:
+    - name: install ftp only centos server
+      yum:  
+        name: ftp
+        state: installed
+      when: (ansible_distribution == "Redhat" and ansible_distribution_major_version == "7") or (ansible_distribution == "Centos" and ansible_distribution_major_version == "7")

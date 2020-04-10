@@ -1,0 +1,8 @@
+- name: example of include playbook contains vars
+  hosts: others
+  vars_files:
+	- custom.yml
+  tasks:
+     - debug: 
+         msg: this is your app "{{ app }}" to "{{ web_root }}"
+	

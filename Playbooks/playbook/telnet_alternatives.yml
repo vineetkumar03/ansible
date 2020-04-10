@@ -1,0 +1,13 @@
+- name: this is my first playbook
+  hosts: myhost
+  gather_facts: false
+  tasks:
+      telnet:
+        user: root
+        password: redhat321
+        login_prompt: "Username: "
+        prompts:
+            - "[>|#]"
+        command:
+            - terminal length 0
+            - show version

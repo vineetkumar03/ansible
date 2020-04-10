@@ -1,0 +1,25 @@
+- name: this is my first playbook
+  hosts: myhost
+  user: ec2-user
+  become: true
+  become_method: sudo
+  become_user: root
+  gather_facts: false
+  tasks:
+    - name: example of single line format (Poor error dedection)
+      file: path=/tmp/test state=directory mode=0777 owner=root group=root
+    
+    - name: example of multi line format
+      file: path=/tmp/test 
+            state=directory 
+            mode=0777 
+            owner=root 
+            group=root
+  
+    - name: example of dictionary method (Fast error deduction)
+      file:
+         path: /tmp/data
+         state: directory
+         mode: 0777
+         owner: root
+         group: root

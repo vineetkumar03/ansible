@@ -1,0 +1,17 @@
+- hosts: myhost
+  gather_facts: false
+  tasks:
+    - file:
+        path: /tmp/data
+        state: directory
+        mode: 0777
+        owner: root
+        group: root
+        
+    - copy:
+        src:  /etc/passwd
+        dest: /etc/data
+        
+    - service:
+        name: httpd
+        state: restarted

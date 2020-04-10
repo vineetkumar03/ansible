@@ -1,0 +1,21 @@
+- name: example condition based tasks
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: first service status
+      command: systemctl is-active postfix
+      register: svc
+      ignore_errors: yes
+      
+    - name: start if not running
+      service: 
+        name: postfix   
+        state: started
+      when: svc.rc != 0
+      
+    - name: stop if  running
+      service: 
+        name: postfix   
+        state: stopped
+      when: svc.rc == 0 or svc.stdout == active
+      

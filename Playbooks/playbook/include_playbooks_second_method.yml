@@ -1,0 +1,8 @@
+- name: example of include playbook contains vars
+  hosts: others
+  tasks:
+    - name: include custom vars file
+      include_vars: custom.yml
+    - debug: 
+         msg: this is your packagr name {{ pkg }}"
+	

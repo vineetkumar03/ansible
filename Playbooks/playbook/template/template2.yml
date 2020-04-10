@@ -1,0 +1,29 @@
+- name: example of template 2
+  hosts: localhost
+  vars: 
+        web_root: /var/www/html
+  tasks:
+    - name: install httpd
+      yum: 
+        name: httpd
+        state: installed
+    - name: start httpd
+      service: 
+        name: httpd
+        state: started
+    - name: cretae index.html
+      copy: 
+        content: "HELLO WORD\n"
+        dest: "{{ web_root }}/index.html"
+    - name: copy web.conf.j2
+      template: 
+        src: web.conf.j2
+        dest: /etc/httpd/conf.d/web.conf
+      notify: 
+         - restart_apache
+  handlers:
+    - name: restart_apache
+      service: 
+        name: httpd
+        state: restarted
+	

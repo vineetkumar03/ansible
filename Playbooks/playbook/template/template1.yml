@@ -1,0 +1,7 @@
+- name: example of template1
+  hosts: localhost
+  tasks: 
+     - name: push template file
+        template: 
+            src: motd.j2
+            dest: /etc/motd

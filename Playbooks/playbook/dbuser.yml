@@ -1,0 +1,11 @@
+- name: this is my first playbook
+  hosts: myhost
+  gather_facts: false
+  tasks:
+    - mysql_user:
+        login_user: root
+        login_password: root
+        name: backup
+        password: Readonly#321
+        priv: '*.*:SELECT'
+        state: present

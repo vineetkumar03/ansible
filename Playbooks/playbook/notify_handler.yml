@@ -1,0 +1,28 @@
+- name: example condition based tasks
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: deploy application
+      copy:
+        src: abc
+        dest: /tmp
+      notify:
+        - restart_application
+        - restart_data
+        
+/* NOT EFFECT ANT OTHER TASKS */      
+       
+    - name:             
+      yum:
+            name: sftp
+            state: installed
+        
+  handlers:
+        - name: restart-application
+         service: 
+            name: postfix
+            state: restarted
+        - name: restart_data
+          service:
+            name: httpd
+            state: restarted

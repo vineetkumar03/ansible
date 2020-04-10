@@ -1,0 +1,151 @@
+- hosts: VA
+  gather_facts: False
+
+  vars:
+    output: []
+
+#  vars_prompt:
+#    - name: setGrub
+#      prompt: "Do you want to set Grub Password for Hardening VA. Enter Yes or No"
+#      private: no
+
+#  vars_prompt:
+#    - name: grubPass
+#      when: setGrub == yes
+#      prompt: "Enter Grub Password for Hardening VA. (Corresponding UserName will be set to Root)"
+#      private: no
+
+  tasks:
+  - name: Securetty Part 1
+    replace:
+      path: /etc/securetty
+      after: 'tty10'
+      regexp: '^(.+)$'
+      replace: ""
+
+  - name: Securetty Part 2
+    replace:
+      path: /etc/securetty
+      after: '# Virtual consoles'
+      before: 'tty1'
+      regexp: '^(.+)$'
+      replace: ""
+
+  - name: Securetty Part 3
+    replace:
+      path: /etc/securetty
+      after: '# Local X displays'
+      before: '# Virtual consoles'
+      regexp: '^(.+)$'
+      replace: ""
+
+  - name: Permission for Home Folder
+    shell: chmod 750 /home/
+
+  - name: ICMP Related
+    blockinfile:
+      path: /etc/sysctl.conf
+      insertafter: EOF
+      block: |
+        #Disable IPV6
+        net.ipv6.conf.all.disable_ipv6 = 1
+        net.ipv6.conf.default.disable_ipv6 = 1
+        net.ipv6.conf.lo.disable_ipv6 = 1
+        # IP Spoofing protection
+        net.ipv4.conf.all.rp_filter = 1
+        net.ipv4.conf.default.rp_filter = 1
+        # Ignore ICMP broadcast requests
+        net.ipv4.icmp_echo_ignore_broadcasts = 1
+        # Disable source packet routing
+        net.ipv4.conf.all.accept_source_route = 0
+        net.ipv6.conf.all.accept_source_route = 0
+        net.ipv4.conf.default.accept_source_route = 0
+        net.ipv6.conf.default.accept_source_route = 0
+        # Ignore send redirects
+        net.ipv4.conf.all.send_redirects = 0
+        net.ipv4.conf.default.send_redirects = 0
+        # Block SYN attacks
+        net.ipv4.tcp_syncookies = 1
+        net.ipv4.tcp_max_syn_backlog = 2048
+        net.ipv4.tcp_synack_retries = 2
+        net.ipv4.tcp_syn_retries = 5
+        # Log Martians
+        net.ipv4.conf.all.log_martians = 1
+        net.ipv4.icmp_ignore_bogus_error_responses = 1
+        # Ignore ICMP redirects
+        net.ipv4.conf.all.accept_redirects = 0
+        net.ipv4.conf.default.accept_redirects = 0
+        net.ipv4.conf.all.secure_redirects=0
+        net.ipv4.conf.default.secure_redirects=0
+        net.ipv6.conf.all.accept_redirects = 0
+        net.ipv6.conf.default.accept_redirects = 0
+        #Ignore Directed pings
+        net.ipv4.icmp_echo_ignore_all = 1
+  - pause:
+      prompt: "Do you want to set Proxy? Input 'Yes' to proceed. 'No' otherwise."
+    register: my_pause
+
+#  - name: Set Proxy
+#    when: my_pause.user_input == "yes"
+#    blockinfile:
+#      path: /etc/apt/apt.conf.d/proxy.conf
+#      insertafter: EOF
+#      block: |
+#        Acquire {
+#        HTTP::proxy "http://10.248.35.41:3128";
+#        HTTP::proxy "http://10.248.35.41:3128";
+#        }
+
+  - name: Set Proxy
+    when: my_pause.user_input == "yes"
+    blockinfile:
+      path: /etc/apt/apt.conf.d/proxy.conf
+      insertafter: EOF
+      block: |
+      Acquire::http::Proxy "http://hostname or IP:8000/";
+
+  - name: Clean unwanted olderstuff
+    apt:
+            autoremove: yes
+            purge: yes
+
+  - name: Run Common Scripts
+    shell: sysctl -p
+    shell: apt-get update
+    shell: apt-get upgrade -y
+    shell: update-grub
+
+  - name: Set nodev on Partitions
+    shell: mount -o remount,nodev /run
+    shell: mount -o remount,nodev /boot
+    shell: mount -o remount,nodev /boot/efi
+
+  - name: Auto Remove Snapd
+    shell: apt autoremove --purge snapd -y
+
+  - name: Set UMask
+    blockinfile:
+      path: ~/.bashrc
+      insertafter: EOF
+      block: |
+        umask 077
+
+#  - pause:
+#      prompt: "Enter Grub Password for Hardening VA. (Corresponding UserName will be set to Root)"
+#    register: serve_pause
+#    when: setGrub | bool
+
+#  - name: Grub Pass Generate
+#    shell: "printf '{{serve_pause}}\n{{serve_pause}}' | grub-mkpasswd-pbkdf2 | awk '/grub.pbkdf/{print$NF}'"
+#    register: output
+
+#  - name: Grub Password Set in Custom_40
+#    blockinfile:
+#        path: /etc/grub.d/40_custom
+#        insertafter: EOF
+#        block: |
+#          superusers="root"
+#          password_pbkdf2 root
+#          {{output}}
+
+

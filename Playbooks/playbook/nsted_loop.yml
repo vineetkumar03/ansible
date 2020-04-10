@@ -1,0 +1,25 @@
+- name: example of sample loop
+  hosts: all
+  vars:
+    myfiles:
+        - /etc/passwd
+        - /etc/motd
+        
+    mydirs:
+        - /root
+        - /tmp
+  tasks:
+    - name: copy myfile into mydirs with nested loop
+      copy: 
+        src: "{{ item[0] }"
+        dest: "{{ item[1] }}"
+      with_items:
+        - "{{ mydirs }" 
+        - "{{ myfiles }}"
+    - name: example of hash loop
+      copy: 
+        src: "{{ item.x }"
+        dest: "{{ item.y }}"
+      with_items:
+        - "{{ x: '/etc/passwd', y: '/root'}}" 
+        - "{{ x: '/etc/motd', y: '/tmp'}}"

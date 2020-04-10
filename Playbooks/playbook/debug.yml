@@ -1,0 +1,23 @@
+- name: condition based tasks
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: first check file assistance
+      state: 
+        path: /etc/krnetwork.conf
+      register: abc
+      
+    - nmae: print the capture value of abc
+      debug: 
+        var: abc
+/*        
+    - name: check service status 
+      command: systemctl is-active postfix
+      register: svc
+      ignore_errors: yes
+      
+    - name: debug 
+      debug: svc 
+      
+*/
+    

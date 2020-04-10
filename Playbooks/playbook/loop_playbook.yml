@@ -1,0 +1,62 @@
+- name: example of sample loop
+  hosts: all
+  vars:
+    myfiles:
+        - /etc/passwd
+        - /etc/motd
+        
+    mydirs:
+        - /root
+        - /tmp
+  tasks:
+    - name: copy /etc/passwd group fstab into /var/tmp (n*1)
+      copy: 
+        src: "{{ item }}"
+        dest: /vat/tmp/
+      with_items:
+        - /etc/passwd
+        - /etc/group
+        - /etc/fstab 
+        
+    - name: copy /etc/passwd group fstab into /var/tmp (1*N)
+      copy: 
+        src: /vat/tmp
+        dest: "{{ item }}"
+      with_items:
+        - /etc/passwd
+        - /etc/group
+        - /etc/fstab
+        
+    - name: install package vsftpd  ftp httpd
+      yum: 
+        - vsftpd
+        - ftp
+        - httpd
+        
+    - name: install package vsftpd  ftp httpd
+      yum: 
+        name: "{{ item }}"
+        state: installed
+      wih_items:
+        - vsftpd
+        - ftp
+        - httpd
+        
+    -name: example of nested loop  
+     copy: 
+        src: "{{ item }}"
+        dest: /vat/tmp/
+      with_items:
+            - "{{ myfiles }}"
+        
+    - name: copy 
+      copy: 
+        src: /vat/tmp
+        dest: "{{ item }}"
+      with_items:
+        - "{{ mydirs }" 
+        
+        
+        
+        
+        
